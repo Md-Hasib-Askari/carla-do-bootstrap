@@ -5,6 +5,7 @@ Your GPU droplet image already supports Docker + NVIDIA GPU runtime.
 Verify:
 ```bash
 docker run --rm --gpus all nvidia/cuda:12.2.0-base-ubuntu22.04 nvidia-smi
+```
 
 
 ## Repo layout
