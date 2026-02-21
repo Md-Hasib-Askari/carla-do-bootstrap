@@ -7,7 +7,6 @@ Verify:
 docker run --rm --gpus all nvidia/cuda:12.2.0-base-ubuntu22.04 nvidia-smi
 ```
 
-
 ## Repo layout
 
 ```
@@ -18,6 +17,39 @@ carla-do-bootstrap/
   record_mp4.py
   requirements.txt
 ```
+
+---
+
+# How to use this in real life (your exact flow)
+
+### 1 Create GitHub repo on your laptop
+```bash
+mkdir carla-do-bootstrap && cd carla-do-bootstrap
+# create the files above
+git init
+git add .
+git commit -m "Bootstrap CARLA DO GPU"
+git branch -M main
+git remote add origin YOUR_GITHUB_REPO_URL
+git push -u origin main
+````
+
+### 2 On every fresh droplet
+
+```bash
+git clone https://github.com/Md-Hasib-Askari/carla-do-bootstrap.git
+cd carla-do-bootstrap
+chmod +x run_carla.sh stop_carla.sh
+./run_carla.sh
+
+sudo apt update
+sudo apt install -y ffmpeg python3-pip
+pip3 install -r requirements.txt
+
+python3 record_mp4.py
+```
+
+---
 
 ## Start CARLA (droplet)
 
@@ -62,35 +94,3 @@ scp root@DROPLET_IP:/root/carla_drive.mp4 .
 ./stop_carla.sh
 ```
 
-````
-
----
-
-# How to use this in real life (your exact flow)
-
-### 1 Create GitHub repo on your laptop
-```bash
-mkdir carla-do-bootstrap && cd carla-do-bootstrap
-# create the files above
-git init
-git add .
-git commit -m "Bootstrap CARLA DO GPU"
-git branch -M main
-git remote add origin YOUR_GITHUB_REPO_URL
-git push -u origin main
-````
-
-### 2 On every fresh droplet
-
-```bash
-git clone YOUR_GITHUB_REPO_URL
-cd carla-do-bootstrap
-chmod +x run_carla.sh stop_carla.sh
-./run_carla.sh
-
-sudo apt update
-sudo apt install -y ffmpeg python3-pip
-pip3 install -r requirements.txt
-
-python3 record_mp4.py
-```
