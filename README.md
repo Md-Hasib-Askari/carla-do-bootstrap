@@ -22,19 +22,7 @@ carla-do-bootstrap/
 
 # How to use this in real life (your exact flow)
 
-### 1 Create GitHub repo on your laptop
-```bash
-mkdir carla-do-bootstrap && cd carla-do-bootstrap
-# create the files above
-git init
-git add .
-git commit -m "Bootstrap CARLA DO GPU"
-git branch -M main
-git remote add origin YOUR_GITHUB_REPO_URL
-git push -u origin main
-````
-
-### 2 On every fresh droplet
+### On every fresh droplet
 
 ```bash
 git clone https://github.com/Md-Hasib-Askari/carla-do-bootstrap.git
