@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h2>CARLA Remote Viewer</h2>
+
+    <video id="video" autoplay playsinline></video>
+
+    <div style="margin-top:10px">
+        <strong>Camera:</strong>
+        <button onclick="switchCamera('front')">Front</button>
+        <button onclick="switchCamera('driver')">Driver</button>
+        <button onclick="switchCamera('rear')">Rear</button>
+        <button onclick="switchCamera('top')">Top</button>
+        <button onclick="switchCamera('hood')">Hood</button>
+    </div>
+
+    <div style="margin-top:10px">
+        <strong>Vehicle:</strong>
+        <select id="vehicleSelect"></select>
+        <button onclick="refreshVehicles()">&#x21bb; Refresh</button>
+        <button onclick="switchVehicle()">Attach Camera</button>
+    </div>
+
+    <script>
+
+        const pc = new RTCPeerConnection();
+
+        pc.ontrack = function (event) {
+            document.getElementById("video").srcObject = event.streams[0];
+        };
+
+        async function start() {
+
+            pc.addTransceiver('video', { direction: 'recvonly' });
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+
+            const response = await fetch("/offer", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    offer: pc.localDescription
+                })
+            });
+
+            const data = await response.json();
+
+            await pc.setRemoteDescription({ sdp: data.sdp, type: data.type });
+        }
+
+        start();
+
+        async function refreshVehicles() {
+            const res = await fetch("/vehicles");
+            const vehicles = await res.json();
+            const select = document.getElementById("vehicleSelect");
+            select.innerHTML = "";
+            vehicles.forEach(v => {
+                const opt = document.createElement("option");
+                opt.value = v.id;
+                opt.textContent = `[${v.id}] ${v.type}${v.current ? " (current)" : ""}`;
+                if (v.current) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        async function switchVehicle() {
+            const select = document.getElementById("vehicleSelect");
+            const vehicle_id = parseInt(select.value);
+            await fetch("/set_vehicle", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ vehicle_id })
+            });
+            refreshVehicles();
+        }
+
+        refreshVehicles();
+
+        async function switchCamera(preset) {
+            await fetch("/set_camera", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ preset })
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>
